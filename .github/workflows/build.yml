@@ -1,0 +1,61 @@
+---
+name: build
+on: [deployment, push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.8'
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Execute docker-compose up
+        run: docker-compose up -d
+
+      - name: Show docker ps
+        run: docker ps
+
+      - name: Show Docker images
+        run: docker images
+
+      - name: Execute docker-compose down
+        run: docker-compose down
+
+      - name: Show Docker version
+        run: docker --version
+
+      - name: Show Docker compose version
+        run: docker-compose --version
+
+
+  hadolint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Dockerfile lint
+        uses: brpaz/hadolint-action@eb9b96b
+        with:
+          dockerfile: Dockerfile
+
+  trailing-whitespace:
+    name: Find Trailing Whitespace
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: harupy/find-trailing-whitespace@56310d7
+
+  lintAllTheThings:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: yaml-lint
+        uses: ibiqlik/action-yamllint@665205c
+        with:
+          config_file: .yamllint
